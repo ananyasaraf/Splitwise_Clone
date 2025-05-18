@@ -1,24 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route ,Navigate } from "react-router-dom";
+import "./App.css";
+import Navbar from "./components/Navbar";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import UserDashboard from "./components/UserDashboard";
+import ExpensePage from "./components/ExpensePage";
+import GroupPage from "./components/GroupPage";
+import PaymentPage from "./components/PaymentPage";
+import ExpenseSplit from "./components/ExpenseSplit";
+import { useEffect, useState } from "react";
 
 function App() {
+  const[isAuthenticated,setIsAuthenticated]=useState(!!localStorage.getItem("user"));
+  useEffect(()=>{
+    const token = localStorage.getItem("user");
+    setIsAuthenticated(!!token);
+  },[]);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated}/>
+      <Routes>
+        <Route path="/" element={<Login setIsAuthenticated={setIsAuthenticated}/>} />
+        <Route path="/signup" element={<Signup setIsAuthenticated={setIsAuthenticated}/>} />
+        <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated}/>} />
+
+
+        <Route path="/dashboard" 
+        element={isAuthenticated ? <UserDashboard /> : <Navigate to="/login" />} />
+        <Route path="/expenses" element={isAuthenticated?<ExpensePage />:<Navigate to="/login"/>} />
+        <Route path="/expenseSplits" element={isAuthenticated?<ExpenseSplit />:<Navigate to="/login"/>} />
+        <Route path="/groups" element={isAuthenticated?<GroupPage />:<Navigate to ="/login"/>} />
+        <Route path="/payments" element={isAuthenticated?<PaymentPage />:<Navigate to="/login"/>} />
+
+        
+      </Routes>
+    </Router>
   );
 }
 
